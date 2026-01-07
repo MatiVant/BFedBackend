@@ -23,6 +23,7 @@ async function bootstrap() {
     origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
   });
   await app.listen(process.env.PORT ?? 3001);
   console.log(`Server is running on port ${process.env.PORT ?? 3001}`);
