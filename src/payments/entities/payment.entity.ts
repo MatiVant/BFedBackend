@@ -6,6 +6,7 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  Index,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 
@@ -14,6 +15,7 @@ export class Payment {
   @PrimaryGeneratedColumn('uuid')
   id: string; // UUID o identificador único
 
+  @Index() // Índice para búsquedas por usuario
   @Column()
   userId: string; // FK a User
 

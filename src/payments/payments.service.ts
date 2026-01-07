@@ -18,23 +18,50 @@ export class PaymentsService {
   }
 
   async findAll(): Promise<Payment[]> {
-    return await this.paymentsRepository.find({
-      relations: ['user'],
-    });
+    // Usar QueryBuilder para optimizar y seleccionar solo campos necesarios del usuario
+    return await this.paymentsRepository
+      .createQueryBuilder('payment')
+      .leftJoinAndSelect('payment.user', 'user')
+      .select([
+        'payment',
+        'user.id',
+        'user.name',
+        'user.email',
+        'user.membershipNumber',
+      ])
+      .orderBy('payment.createdAt', 'DESC')
+      .getMany();
   }
 
   async findOne(id: string): Promise<Payment | null> {
-    return await this.paymentsRepository.findOne({
-      where: { id },
-      relations: ['user'],
-    });
+    return await this.paymentsRepository
+      .createQueryBuilder('payment')
+      .leftJoinAndSelect('payment.user', 'user')
+      .select([
+        'payment',
+        'user.id',
+        'user.name',
+        'user.email',
+        'user.membershipNumber',
+      ])
+      .where('payment.id = :id', { id })
+      .getOne();
   }
 
   async findByUserId(userId: string): Promise<Payment[]> {
-    return await this.paymentsRepository.find({
-      where: { userId },
-      relations: ['user'],
-    });
+    return await this.paymentsRepository
+      .createQueryBuilder('payment')
+      .leftJoinAndSelect('payment.user', 'user')
+      .select([
+        'payment',
+        'user.id',
+        'user.name',
+        'user.email',
+        'user.membershipNumber',
+      ])
+      .where('payment.userId = :userId', { userId })
+      .orderBy('payment.createdAt', 'DESC')
+      .getMany();
   }
 
   async update(
