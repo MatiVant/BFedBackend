@@ -66,6 +66,26 @@ export class Payment {
   @Column({ nullable: true })
   adminNotes?: string; // Notas del administrador (opcional)
 
+  @Column({ type: 'timestamp', nullable: true })
+  reviewedAt?: Date; // Fecha de revisión (opcional)
+
+  @Column({ nullable: true })
+  reviewedBy?: string; // FK a User (admin que revisó)
+
+  @Column({ type: 'jsonb', nullable: true })
+  editHistory?: Array<{
+    editedAt: string;
+    editedBy: string;
+    reason: string;
+    previousValues?: any;
+  }>; // Historial de ediciones
+
+  @Column({ nullable: true })
+  attachmentName?: string; // Nombre del archivo adjunto (legacy)
+
+  @Column({ nullable: true })
+  attachmentUrl?: string; // URL del archivo adjunto (legacy)
+
   @ManyToOne(() => User, (user) => user.payments)
   @JoinColumn({ name: 'userId' })
   user: User;
