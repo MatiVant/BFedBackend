@@ -9,8 +9,6 @@ import { UsersService } from '../users/users.service';
 import { RegisterDto } from './dto/register.dto';
 import { User } from '../users/entities/user.entity';
 
-const SALT_ROUNDS = 10;
-
 @Injectable()
 export class AuthService {
   constructor(
@@ -63,13 +61,9 @@ export class AuthService {
       throw new ConflictException('El email ya está registrado');
     }
 
-    // Hashear la contraseña
-    const hashedPassword = await bcrypt.hash(registerDto.password, SALT_ROUNDS);
-
-    // Crear el usuario
+    // Crear el usuario (UsersService hashea la contraseña automáticamente)
     const user = await this.usersService.create({
       ...registerDto,
-      password: hashedPassword,
       role: registerDto.role || 'associate',
     });
 
@@ -97,11 +91,6 @@ export class AuthService {
     };
   }
 
-  // Método para hashear password (útil para crear usuarios desde otros servicios)
-  async hashPassword(password: string): Promise<string> {
-    return bcrypt.hash(password, SALT_ROUNDS);
-  }
-
   // Método para crear un superusuario inicial
   async createSuperUser(
     email: string,
@@ -113,15 +102,13 @@ export class AuthService {
       throw new ConflictException('El superusuario ya existe');
     }
 
-    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-
+    // UsersService hashea la contraseña automáticamente
     return this.usersService.create({
       email,
-      password: hashedPassword,
+      password,
       name,
       role: 'admin',
       membershipNumber: 'ADM001',
     });
   }
 }
-
