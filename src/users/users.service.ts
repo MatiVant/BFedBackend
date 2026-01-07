@@ -26,12 +26,35 @@ export class UsersService {
     return await this.usersRepository.save(user);
   }
 
-  async findAll(): Promise<User[]> {
-    return await this.usersRepository.find();
+  async findAll(): Promise<Partial<User>[]> {
+    // No devolver profileImage ni password en el listado (muy pesados)
+    return await this.usersRepository
+      .createQueryBuilder('user')
+      .select([
+        'user.id',
+        'user.email',
+        'user.name',
+        'user.role',
+        'user.phone',
+        'user.address',
+        'user.membershipNumber',
+        'user.joinDate',
+        'user.dni',
+        'user.annualQuota',
+        // profileImage excluido intencionalmente - muy pesado
+      ])
+      .getMany();
   }
 
   async findOne(id: string): Promise<User | null> {
-    return await this.usersRepository.findOne({ where: { id } });
+    // Para un usuario individual, sí devolvemos la imagen
+    const user = await this.usersRepository.findOne({ where: { id } });
+    if (user) {
+      // Nunca devolver el password
+      const { password, ...userWithoutPassword } = user;
+      return userWithoutPassword as User;
+    }
+    return null;
   }
 
   async findByEmail(email: string): Promise<User | null> {

@@ -1,10 +1,22 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { json, urlencoded } from 'express';
+import * as express from 'express';
+import { join } from 'path';
+import { existsSync, mkdirSync } from 'fs';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Crear carpeta public/images si no existe
+  const uploadsPath = join(__dirname, '..', 'public', 'images');
+  if (!existsSync(uploadsPath)) {
+    mkdirSync(uploadsPath, { recursive: true });
+  }
+
+  // Servir archivos estáticos desde /public
+  app.use('/uploads', express.static(join(__dirname, '..', 'public')));
 
   // Aumentar límite de tamaño del body para imágenes (10MB)
   app.use(json({ limit: '10mb' }));
