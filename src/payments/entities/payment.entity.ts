@@ -86,7 +86,7 @@ export class Payment {
   @Column({ nullable: true })
   attachmentUrl?: string; // URL del archivo adjunto (legacy)
 
-  @ManyToOne(() => User, (user) => user.payments)
+  @ManyToOne(() => User, (user) => user.payments, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user: User;
 }
